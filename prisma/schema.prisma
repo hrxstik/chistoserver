@@ -21,9 +21,9 @@ model User {
   roommates          Json
   pets               Json
 
-  streak             Int
-  checklistsCompleted Int
-  points             Int
+  streak             Int @default(1)
+  checklistsCompleted Int @default(0)
+  points             Int @default(0)
 
   league             League?  @relation(fields: [leagueId], references: [id])
   leagueId           Int?
