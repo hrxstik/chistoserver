@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int       @id @default(autoincrement())
+  name               String
+  email              String       @unique
+  password           String
+
+  gender             Gender
+  roomsAmount        Int
+  homeArea           HomeArea
+  rooms              RoomType[]
+
+  roommates          Json
+  pets               Json
+
+  streak             Int
+  checklistsCompleted Int
+  points             Int
+
+  league             League?  @relation(fields: [leagueId], references: [id])
+  leagueId           Int?
+
+  achievements       Achievement[]
+  profession         Profession
+
+  checklist          Checklist?
+
+  verified           DateTime?
+  provider           String?
+  providerId         String?
+
+  verificationCode   VerificationCode?
+
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+model VerificationCode {
+  id        Int       @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int      @unique 
+  code       String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, code])
+}
+
+model Checklist {
+  id            Int   @id @default(autoincrement())
+
+  user          User? @relation(fields: [userId], references: [id])
+  userId        Int?  @unique
+
+  tasks         Task[]
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Task {
+  id            Int       @id @default(autoincrement())
+
+  description   String
+  type          TaskType
+  room          RoomType
+  reward        Int
+
+  Checklist Checklist[]
+}
+
+model Achievement {
+  id     Int       @id @default(autoincrement())
+  name   String
+  levels Int[]
+  type   AchievementType
+  values Int[]
+
+  User User[]
+}
+
+model League {
+  id     Int       @id @default(autoincrement())
+  name   LeagueName
+  
+  users  User[] 
+}
+
+enum Profession {
+  STUDENT
+  OFFICE_WORKER
+  REMOTE_WORKER
+  HYBRID_WORKER
+  STREET_WORKER
+}
+
+enum AchievementType {
+  STREAK
+  POINTS
+  CHECKLISTS_COMPLETED
+  BRONZE_LEAGUE_REACHED
+  SILVER_LEAGUE_REACHED
+  GOLD_LEAGUE_REACHED
+  PLATINUM_LEAGUE_REACHED
+  DIAMOND_LEAGUE_REACHED
+}
+
+enum HomeArea {
+  TINY
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum LeagueName {
+  BRONZE_LEAGUE
+  SILVER_LEAGUE
+  GOLD_LEAGUE
+  PLATINUM_LEAGUE
+  DIAMOND_LEAGUE
+}
+
+enum TaskType {
+  HORIZONTAL_SURFACES_WET_CLEANING
+  VERTICAL_SURFACES_WET_CLEANING
+  HORIZONTAL_SURFACES_VACUUMING
+  LAUNDRY
+  DISHWASHING
+  FURNITURE
+}
+
+enum RoomType {
+  KITCHEN
+  BATHROOM
+  LIVING_ROOM
+  BEDROOM
+  OFFICE
+  EVERYWHERE
+}

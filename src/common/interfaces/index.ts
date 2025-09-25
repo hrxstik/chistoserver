@@ -1,17 +1,12 @@
-import { EAchievementType, ERoom, ETaskType } from '../enums';
+import { Gender, Profession } from '@prisma/client';
+import { PetType } from '../enums';
 
-export interface IAchievement {
-  id: number;
-  name: string;
-  levels: number[];
-  type: EAchievementType;
-  values: number[];
+export interface Roommate {
+  gender: Gender;
+  age: number;
+  profession: Profession;
 }
 
-export interface ITask {
-  id: number;
-  type: ETaskType;
-  room: ERoom;
-  description: string;
-  reward: number;
+export interface Pet {
+  type: PetType;
 }
