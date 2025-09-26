@@ -139,6 +139,7 @@ enum TaskType {
   LAUNDRY
   DISHWASHING
   FURNITURE
+  WASTE_DISPOSING
 }
 
 enum RoomType {
@@ -155,4 +156,5 @@ enum RoomType {
   CLOSET
   LAUNDRY_ROOM
   GARAGE
+  GENERAL
 }

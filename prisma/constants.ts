@@ -126,7 +126,7 @@ export const tasks: Task[] = [
   {
     id: 9,
     type: TaskType.LAUNDRY,
-    room: RoomType.BATHROOM,
+    room: RoomType.GENERAL,
     description: 'Постирать и развесить одежду',
     reward: 10,
   },
@@ -220,5 +220,26 @@ export const tasks: Task[] = [
     room: RoomType.OFFICE,
     description: 'Пропылесосить рабочее место',
     reward: 14,
+  },
+  {
+    id: 23,
+    type: TaskType.FURNITURE,
+    room: RoomType.GARAGE,
+    description: 'Помыть машину',
+    reward: 14,
+  },
+  {
+    id: 24,
+    type: TaskType.WASTE_DISPOSING,
+    room: RoomType.GENERAL,
+    description: 'Выбросить мусор',
+    reward: 10,
+  },
+  {
+    id: 25,
+    type: TaskType.HORIZONTAL_SURFACES_WET_CLEANING,
+    room: RoomType.EVERYWHERE,
+    description: 'Протереть электронику',
+    reward: 8,
   },
 ];
