@@ -26,7 +26,6 @@ async function main() {
         description: task.description,
         type: task.type,
         room: task.room,
-        reward: task.reward,
       },
     });
   }

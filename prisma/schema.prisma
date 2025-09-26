@@ -13,23 +13,29 @@ model User {
   email              String       @unique
   password           String
 
-  gender             Gender
-  roomsAmount        Int
+  //влияет на количество заданий
+  age                Int
+  //определяет количество заданий на каждую комнату
   homeArea           HomeArea
-  rooms              RoomType[]
-
+  //количество уникальных комнат в доме, определяют задания в чеклистах
+  rooms              Room[]
+  //влияет на частоту определенных заданий
+  profession         Profession
+  //определяет отсечку чубрика
+  timeZone           String
+  //влияет на появление определенных заданий
+  hasChildren        Boolean
+  //влияют на количество заданий в чеклистах и определенные их профессией задания в чеклистах
   roommates          Json
-  pets               Json
+  //влияют на частоту определенных заданий в чеклистах
+  pets               Int
 
   streak             Int @default(1)
-  checklistsCompleted Int @default(0)
-  points             Int @default(0)
 
-  league             League?  @relation(fields: [leagueId], references: [id])
-  leagueId           Int?
+  currentChubrikLevel Int @default(1)
+  chubriksGrown       Int @default(0)
 
-  achievements       Achievement[]
-  profession         Profession
+  userAchievements    UserAchievement[]
 
   checklist          Checklist?
 
@@ -41,6 +47,14 @@ model User {
 
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
+}
+
+model Room {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int      @unique
+  type       RoomType
+  tasksStory      Int[]
 }
 
 model VerificationCode {
@@ -59,10 +73,33 @@ model Checklist {
   user          User? @relation(fields: [userId], references: [id])
   userId        Int?  @unique
 
-  tasks         Task[]
+  tasks       ChecklistTask[]
+  isCompleted   Boolean @default(false)
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+}
+
+model ChecklistTask {
+  id          Int           @id @default(autoincrement())
+  checklist   Checklist     @relation(fields: [checklistId], references: [id])
+  checklistId Int
+  task        Task          @relation(fields: [taskId], references: [id])
+  taskId      Int
+  isCompleted Boolean       @default(false)
+
+  @@unique([checklistId, taskId])
+}
+
+model UserAchievement {
+  id            Int          @id @default(autoincrement())
+  user          User         @relation(fields: [userId], references: [id])
+  userId        Int
+  achievement   Achievement  @relation(fields: [achievementId], references: [id])
+  achievementId Int
+  currentLevel  Int          @default(0)
+
+  @@unique([userId, achievementId])
 }
 
 model Task {
@@ -71,9 +108,8 @@ model Task {
   description   String
   type          TaskType
   room          RoomType
-  reward        Int
 
-  Checklist Checklist[]
+  checklistTasks ChecklistTask[]
 }
 
 model Achievement {
@@ -83,14 +119,7 @@ model Achievement {
   type   AchievementType
   values Int[]
 
-  User User[]
-}
-
-model League {
-  id     Int       @id @default(autoincrement())
-  name   LeagueName
-  
-  users  User[] 
+  userAchievements UserAchievement[]
 }
 
 enum Profession {
@@ -103,13 +132,9 @@ enum Profession {
 
 enum AchievementType {
   STREAK
-  POINTS
-  CHECKLISTS_COMPLETED
-  BRONZE_LEAGUE_REACHED
-  SILVER_LEAGUE_REACHED
-  GOLD_LEAGUE_REACHED
-  PLATINUM_LEAGUE_REACHED
-  DIAMOND_LEAGUE_REACHED
+  CHUBRIKS_GROWN
+  CHUBRIK_PHASE_REACHED
+  CHUBRIKS_GONE
 }
 
 enum HomeArea {
@@ -122,14 +147,6 @@ enum HomeArea {
 enum Gender {
   MALE
   FEMALE
-}
-
-enum LeagueName {
-  BRONZE_LEAGUE
-  SILVER_LEAGUE
-  GOLD_LEAGUE
-  PLATINUM_LEAGUE
-  DIAMOND_LEAGUE
 }
 
 enum TaskType {
