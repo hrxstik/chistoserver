@@ -154,6 +154,5 @@ enum RoomType {
   BASEMENT
   CLOSET
   LAUNDRY_ROOM
-  CLOSET
   GARAGE
 }
