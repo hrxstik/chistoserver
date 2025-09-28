@@ -29,4 +29,8 @@ export class UserRepository {
       },
     });
   }
+
+  async update(id: number, data: any) {
+    return this.prisma.user.update({ where: { id }, data });
+  }
 }
