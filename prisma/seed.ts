@@ -1,4 +1,4 @@
-import { PrismaClient, Achievement, Task } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { achievements, tasks } from './constants';
 
 const prisma = new PrismaClient();

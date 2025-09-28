@@ -52,7 +52,7 @@ model User {
 model Room {
   id         Int      @id @default(autoincrement())
   user       User     @relation(fields: [userId], references: [id])
-  userId     Int      @unique
+  userId     Int     
   type       RoomType
   tasksStory      Int[]
 }
@@ -123,6 +123,7 @@ model Achievement {
 }
 
 enum Profession {
+  NONE
   STUDENT
   OFFICE_WORKER
   REMOTE_WORKER

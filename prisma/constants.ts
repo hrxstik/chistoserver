@@ -242,4 +242,10 @@ export const tasks: Task[] = [
     room: RoomType.GENERAL,
     description: 'Погладить одежду',
   },
+  {
+    id: 35,
+    type: TaskType.DAILY,
+    room: RoomType.GENERAL,
+    description: 'Убрать детские игрушки',
+  },
 ];
