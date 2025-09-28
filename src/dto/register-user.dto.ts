@@ -28,6 +28,9 @@ export class RegisterUserDto {
   @IsString()
   passwordRepeat: string;
 
+  @IsString()
+  pushToken: string;
+
   @IsInt()
   age: number;
 
