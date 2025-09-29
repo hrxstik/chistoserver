@@ -9,6 +9,7 @@ import { UserRepository } from '../users/user.repository';
 import { LoginUserDto } from '../../dto/login-user-dto';
 import { VerificationCodeRepository } from '../verification-code/verification-code.repository';
 import { ResendService } from 'nestjs-resend';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly verificationCodeRepository: VerificationCodeRepository,
     private readonly resendService: ResendService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async register(dto: RegisterUserDto) {
@@ -36,7 +38,12 @@ export class AuthService {
       password: hashedPassword,
     };
 
-    return this.userRepository.createUser(userCreateData);
+    const createdUser = await this.userRepository.createUser(userCreateData);
+
+    const payload = { sub: createdUser.id, email: createdUser.email };
+    const accessToken = this.jwtService.sign(payload);
+
+    return { accessToken, user: createdUser };
   }
 
   async login(dto: LoginUserDto) {
@@ -48,8 +55,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password or email');
     }
 
+    const payload = { sub: user.id, email: user.email };
+    const accessToken = this.jwtService.sign(payload);
+
     const { password, ...userData } = user;
-    return userData;
+    return { accessToken, user: userData };
   }
 
   async sendVerificationCode(email: string) {

@@ -23,6 +23,7 @@
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.0",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/schedule": "^6.0.1",
     "@prisma/client": "^6.16.2",
@@ -31,6 +32,8 @@
     "class-validator": "^0.14.2",
     "firebase-admin": "^13.5.0",
     "nestjs-resend": "^1.0.3",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
