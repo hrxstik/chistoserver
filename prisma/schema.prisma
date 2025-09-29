@@ -33,6 +33,8 @@ model User {
   roommates          Json
   //влияют на частоту определенных заданий в чеклистах
   pets               Int
+  
+  avatar             String
 
   streak             Int @default(1)
 

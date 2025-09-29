@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as admin from 'firebase-admin';
@@ -7,17 +7,10 @@ import * as admin from 'firebase-admin';
 export class PushNotificationsService {
   private readonly logger = new Logger(PushNotificationsService.name);
 
-  constructor(private readonly prisma: PrismaService) {
-    // admin.initializeApp({
-    //   //TODO: FIREBASE ENV
-    //   credential: admin.credential.cert({
-    //     projectId: process.env.FIREBASE_PROJECT_ID || '',
-    //     clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
-    //     privateKey:
-    //       process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n') || '',
-    //   }),
-    // });
-  }
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject('FIREBASE_ADMIN') private readonly firebaseAdmin: typeof admin,
+  ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
@@ -78,7 +71,7 @@ export class PushNotificationsService {
     };
 
     try {
-      const response = await admin.messaging().send(message);
+      const response = await this.firebaseAdmin.messaging().send(message);
       this.logger.log(`Push notification sent successfully: ${response}`);
     } catch (error) {
       this.logger.error(`Error sending push notification: ${error}`);
