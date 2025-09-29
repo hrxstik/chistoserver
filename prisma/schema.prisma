@@ -15,8 +15,6 @@ model User {
   // Firebase cloud messaging
   pushTokens  String  @default("[]")
 
-  signedToday        Boolean @default(false)
-
   //влияет на количество заданий
   age                Int
   //определяет количество заданий на каждую комнату
@@ -34,12 +32,13 @@ model User {
   //влияют на частоту определенных заданий в чеклистах
   pets               Int
   
-  avatar             String
+  avatar             String @default("banana")
 
   streak             Int @default(1)
 
   currentChubrikLevel Int @default(1)
   chubriksGrown       Int @default(0)
+  chubriksGone   Int @default(0)
 
   userAchievements    UserAchievement[]
 

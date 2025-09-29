@@ -50,11 +50,6 @@ export class PushNotificationsService {
             for (const token of pushTokens) {
               await this.sendPushNotification(token, title, body);
             }
-
-            await tx.checklist.update({
-              where: { userId: user.id },
-              data: { isCompleted: false },
-            });
           }
         });
       }

@@ -53,4 +53,7 @@ export class RegisterUserDto {
   @ValidateNested({ each: true })
   @Type(() => RoomDto)
   rooms: RoomDto[];
+
+  @IsString()
+  avatar: string;
 }

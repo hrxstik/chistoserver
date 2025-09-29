@@ -44,4 +44,7 @@ export class UpdateUserSettingsDto {
   @ValidateNested({ each: true })
   @Type(() => RoomDto)
   rooms?: RoomDto[];
+
+  @IsOptional()
+  avatar: string;
 }

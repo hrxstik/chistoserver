@@ -2,16 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PushNotificationsService } from '../notifications/push-notifications.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ChecklistsService {
   constructor(
     private readonly pushNotificationsService: PushNotificationsService,
     private readonly prisma: PrismaService,
+    private readonly usersService: UsersService,
   ) {}
   @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
     //После отправки и сброса чеклистов в 7 утра создаем новые
+    await this.usersService.updateUsersChubrikAndChecklistState();
     await this.pushNotificationsService.checkAndNotifyUsersAtHour(7);
 
     const nowUtc = new Date();
@@ -42,5 +45,18 @@ export class ChecklistsService {
         });
       }
     }
+  }
+
+  async findById(id: number) {
+    return await this.prisma.checklist.findUnique({
+      where: { id: id },
+      include: {
+        tasks: true,
+      },
+    });
+  }
+
+  async completeChecklist(userId: number) {
+    await this.usersService.updateUserOnChecklistCompleted(userId);
   }
 }
