@@ -5,16 +5,16 @@ import {
 } from '@nestjs/common';
 import { RegisterUserDto } from '../../dto/register-user.dto';
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from '../users/user.repository';
 import { LoginUserDto } from '../../dto/login-user-dto';
 import { VerificationCodeRepository } from '../verification-code/verification-code.repository';
 import { ResendService } from 'nestjs-resend';
 import { JwtService } from '@nestjs/jwt';
+import { UsersRepository } from '../users/users.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly verificationCodeRepository: VerificationCodeRepository,
     private readonly resendService: ResendService,
     private readonly jwtService: JwtService,
@@ -25,7 +25,7 @@ export class AuthService {
       throw new BadRequestException('Passwords do not match');
     }
 
-    const existingUser = await this.userRepository.findByEmail(dto.email);
+    const existingUser = await this.usersRepository.findByEmail(dto.email);
 
     if (existingUser) {
       throw new BadRequestException('Email already in use');
@@ -38,7 +38,7 @@ export class AuthService {
       password: hashedPassword,
     };
 
-    const createdUser = await this.userRepository.createUser(userCreateData);
+    const createdUser = await this.usersRepository.createUser(userCreateData);
 
     const payload = { sub: createdUser.id, email: createdUser.email };
     const accessToken = this.jwtService.sign(payload);
@@ -47,7 +47,7 @@ export class AuthService {
   }
 
   async login(dto: LoginUserDto) {
-    const user = await this.userRepository.findByEmail(dto.email);
+    const user = await this.usersRepository.findByEmail(dto.email);
     const isPasswordValid = user
       ? await bcrypt.compare(dto.password, user.password)
       : false;
@@ -63,7 +63,7 @@ export class AuthService {
   }
 
   async sendVerificationCode(email: string) {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
@@ -87,7 +87,7 @@ export class AuthService {
   }
 
   async confirmCode(email: string, code: string) {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
@@ -102,7 +102,7 @@ export class AuthService {
 
     await this.verificationCodeRepository.deleteByUserId(user.id);
 
-    await this.userRepository.update(user.id, {
+    await this.usersRepository.update(user.id, {
       verified: new Date(),
       provider: 'chistopro',
     });
