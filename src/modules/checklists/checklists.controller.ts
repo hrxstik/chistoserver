@@ -21,6 +21,7 @@ export class ChecklistsController {
       }
     }
 
-    return this.checklistsService.completeChecklist(completeDto.findById);
+    const userId = checklist?.userId || 0;
+    return this.checklistsService.completeChecklist(userId);
   }
 }
