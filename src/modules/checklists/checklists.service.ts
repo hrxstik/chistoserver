@@ -3,6 +3,14 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PushNotificationsService } from '../notifications/push-notifications.service';
 import { UsersService } from '../users/users.service';
+import { Checklist, Prisma, Room, Task, User } from '@prisma/client';
+
+type UserWithRelations = Prisma.UserGetPayload<{
+  include: {
+    checklist: true;
+    rooms: true;
+  };
+}>;
 
 @Injectable()
 export class ChecklistsService {
@@ -17,33 +25,58 @@ export class ChecklistsService {
     await this.usersService.updateUsersChubrikAndChecklistState();
     await this.pushNotificationsService.checkAndNotifyUsersAtHour(7);
 
-    const nowUtc = new Date();
     const users = await this.prisma.user.findMany({
-      include: { checklist: true },
+      include: { checklist: true, rooms: true },
     });
-
     const tasks = await this.prisma.task.findMany();
-
+    const nowUtc = new Date();
     for (const user of users) {
-      const userTime = new Date(
-        nowUtc.toLocaleString('en-US', { timeZone: user.timeZone }),
-      );
+      await this.createChecklist(user, nowUtc, tasks);
+    }
+  }
 
-      //TODO: логика выбора заданий
-      if (userTime.getHours() === 7) {
-        const shuffledTasks = tasks.sort(() => 0.5 - Math.random());
-        const selectedTasks = shuffledTasks.slice(0, 3);
+  async createChecklist(user: UserWithRelations, nowUtc: Date, tasks: Task[]) {
+    const userTime = new Date(
+      nowUtc.toLocaleString('en-US', { timeZone: user.timeZone }),
+    );
+
+    //TODO: логика выбора заданий
+    if (userTime.getHours() === 7) {
+      const userChecklist = await this.prisma.checklist.findUnique({
+        where: { userId: user.id },
+        include: { tasks: true },
+      });
+
+      const newTasks = [] as Task[];
+
+      const userRooms = user.rooms;
+      const userArea = user.homeArea;
+      const userProfession = user.profession;
+      const userPetsNumber = user.pets;
+      const userHasChildren = user.hasChildren;
+
+      userRooms.forEach(async (room) => {
+        const thisRoomTypeTasks = tasks.filter(
+          (task) => task.room === room.type,
+        );
+
+        await this.prisma.room.update({
+          where: { id: room.id },
+          data: {
+            tasksStory: thisRoomTypeTasks.map((task) => task.id),
+          },
+        });
 
         await this.prisma.checklist.update({
           where: { userId: user.id },
           data: {
-            tasks: {
-              set: [],
-              connect: selectedTasks.map((task) => ({ id: task.id })),
-            },
+            tasks: {},
           },
         });
-      }
+
+        if (user.hasChildren) {
+        }
+      });
     }
   }
 
