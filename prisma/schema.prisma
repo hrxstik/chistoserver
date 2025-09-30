@@ -150,11 +150,6 @@ enum HomeArea {
   LARGE
 }
 
-enum Gender {
-  MALE
-  FEMALE
-}
-
 enum TaskType {
   HORIZONTAL_SURFACES_WET_CLEANING
   VERTICAL_SURFACES_WET_CLEANING
