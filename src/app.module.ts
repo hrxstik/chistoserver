@@ -9,6 +9,7 @@ import { ResendModule } from 'nestjs-resend';
 import { VerificationCodeModule } from './modules/verification-code/verification-code.module';
 import { FirebaseAuthService } from './modules/firebase-auth/firebase-auth.service';
 import { FirebaseAuthModule } from './modules/firebase-auth/firebase-auth.module';
+import { AchievementsModule } from './modules/achievements/achievements.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { FirebaseAuthModule } from './modules/firebase-auth/firebase-auth.module
     }),
     VerificationCodeModule,
     FirebaseAuthModule,
+    AchievementsModule,
   ],
   controllers: [AppController],
   providers: [AppService, FirebaseAuthService],

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { CompleteChecklistDto } from 'src/dto/complete-checklist.dto';
 import { ChecklistsService } from './checklists.service';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
@@ -12,7 +12,7 @@ export class ChecklistsController {
   @Post('complete')
   async completeChecklist(@Body() completeDto: CompleteChecklistDto) {
     const checklist = await this.checklistsService.findById(
-      completeDto.findById,
+      completeDto.checklistId,
     );
 
     if (checklist) {
@@ -23,5 +23,10 @@ export class ChecklistsController {
 
     const userId = checklist?.userId || 0;
     return this.checklistsService.completeChecklist(userId);
+  }
+
+  @Get('current')
+  async getChecklist(@Req() req) {
+    return this.checklistsService.findByUserId(req.user.sub);
   }
 }

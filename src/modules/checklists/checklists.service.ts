@@ -262,6 +262,13 @@ export class ChecklistsService {
     });
   }
 
+  async findByUserId(id: number) {
+    return await this.prisma.checklist.findUnique({
+      where: { userId: id },
+      include: { tasks: true },
+    });
+  }
+
   async completeChecklist(userId: number) {
     await this.usersService.updateUserOnChecklistCompleted(userId);
   }
