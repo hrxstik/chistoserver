@@ -13,6 +13,7 @@ import {
   TaskType,
   User,
 } from '@prisma/client';
+import { AchievementsService } from '../achievements/achievements.service';
 
 type UserWithRelations = Prisma.UserGetPayload<{
   include: {
@@ -27,6 +28,7 @@ export class ChecklistsService {
     private readonly pushNotificationsService: PushNotificationsService,
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
+    private readonly achievementsService: AchievementsService,
   ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
@@ -271,5 +273,19 @@ export class ChecklistsService {
 
   async completeChecklist(userId: number) {
     await this.usersService.updateUserOnChecklistCompleted(userId);
+
+    // Обновляем ачивки
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await this.achievementsService.updateUserAchievements(userId, {
+      streak: user.streak,
+      chubriksGrown: user.chubriksGrown,
+      chubrikPhaseReached: user.currentChubrikLevel,
+      chubriksGone: user.chubriksGone,
+    });
   }
 }

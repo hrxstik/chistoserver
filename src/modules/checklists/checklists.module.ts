@@ -5,10 +5,11 @@ import { PushNotificationModule } from '../notifications/push-notifications.modu
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UsersModule } from '../users/users.module';
 import { JwtService } from '@nestjs/jwt';
+import { AchievementsService } from '../achievements/achievements.service';
 
 @Module({
   imports: [PushNotificationModule, PrismaModule, UsersModule],
-  providers: [ChecklistsService, JwtService],
+  providers: [ChecklistsService, JwtService, AchievementsService],
   controllers: [ChecklistsController],
 })
 export class ChecklistsModule {}
